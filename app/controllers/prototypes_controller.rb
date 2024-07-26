@@ -2,7 +2,7 @@ class PrototypesController < ApplicationController
   before_action :authenticate_user!, only: [ :new, :create, :edit, :update, :destroy ]
   before_action :redirect_unless_logged_in, except: [:index, :show]
   before_action :set_prototype, only: [:show, :edit, :update, :destroy]
-  
+  before_action :authorize_user!, only: [:edit, :update, :destroy]
   
 
   def index
@@ -66,6 +66,13 @@ class PrototypesController < ApplicationController
   
   def set_prototype
     @prototype = Prototype.find(params[:id])
+  end
+
+  def authorize_user!
+    @prototype = Prototype.find(params[:id])
+    unless @prototype.user == current_user
+      redirect_to root_path, alert: 'You are not authorized to perform this action.'
+    end
   end
 
 
